@@ -4,3 +4,5 @@ __pycache__/
 docker/*
 db-volumes/
 db.sqlite3
+.DS_store
+db/
