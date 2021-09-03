@@ -3,6 +3,8 @@ from django.urls.conf import include
 from memoapp import views
 
 urlpatterns = [
-    path('signup/', views.signupview),
-    path('signin/', views.signinview),
+    path('signup/', views.signupview, name='signup'),
+    path('signin/', views.signinview, name='signin'),
+    path('signout/', views.signoutview, name='signout'),
+    path('list/', views.listview, name='list'),
 ]

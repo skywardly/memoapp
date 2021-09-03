@@ -1,9 +1,9 @@
 from memoapp.models import MemoModel, MyUser
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth.models import User
-from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
-
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 from memoapp.forms import LoginForm
 
 # Create your views here.
@@ -26,7 +26,18 @@ def signinview(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('memoapp/list.html')
+            return redirect('list')
         else:
             return render(request, 'memoapp/signin.html', {})
     return render(request, 'memoapp/signin.html', {})
+
+
+@login_required
+def listview(request):
+    object_list = MemoModel.objects.all()
+    return render(request, 'memoapp/list.html', {'object_list':object_list})
+
+
+def signoutview(request):
+    logout(request)
+    return redirect('signin')
