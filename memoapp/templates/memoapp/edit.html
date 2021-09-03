@@ -1,5 +1,12 @@
 <h1>新規メモ＆編集ページ</h1>
 
+<form action="" method="POST" novalidate>{% csrf_token %}
+    <label for="{{ form.memo.auto_id }}">メモ</label>
+    {{ form.memo }}
+    {{ form.memo.errors }}
+  <button class="btn btn-primary">作成</button>
+</form>
+
 <p><a href="{% url 'list' %}">＜メモ一覧に戻る</a></p>
 <p><a href="{% url 'create' %}">新規</a></p>
 <p>保存</p>

@@ -1,10 +1,11 @@
 from memoapp.models import MemoModel, MyUser
 from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from memoapp.forms import LoginForm
+from memoapp.forms import LoginForm, MemoForm
 
 # Create your views here.
 
@@ -26,6 +27,8 @@ def signinview(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            message = 'ログインしました。'
+            messages.success(request, message)
             return redirect('list')
         else:
             return render(request, 'memoapp/signin.html', {})
@@ -45,8 +48,28 @@ def listview(request):
 
 @login_required
 def createview(request):
-    object = MemoModel.objects.all()
-    return render(request, 'memoapp/edit.html', {})
+    if request.method == 'GET':
+        form = MemoForm()
+        return render(request, 'memoapp/edit.html', {'form': form})
+    elif request.method == 'POST':
+        form = MemoForm(request.POST)
+        if form.is_valid():
+            MemoModel.objects.create(user=request.user, memo=form.cleaned_data['memo'])
+            messages.success(request, '作成しました。')
+            return redirect('list')
+        else:
+            return render(request, 'memoapp/edit.html', {'form': form})
+
+'''
+@login_required
+def createview(request):
+    form = MemoForm(request.POST or None)
+    if form.is_valid():
+        MemoModel.objects.create(user=request.user, memo=form.cleaned_data['memo'])
+        messages.success(request, '作成しました。')
+        return redirect('list')
+    return render(request, 'memoapp/edit.html', {'form': form})
+'''
 
 
 @login_required
