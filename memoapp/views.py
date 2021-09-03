@@ -32,12 +32,25 @@ def signinview(request):
     return render(request, 'memoapp/signin.html', {})
 
 
+def signoutview(request):
+    logout(request)
+    return redirect('signin')
+
+
 @login_required
 def listview(request):
     object_list = MemoModel.objects.all()
     return render(request, 'memoapp/list.html', {'object_list':object_list})
 
 
-def signoutview(request):
-    logout(request)
-    return redirect('signin')
+@login_required
+def createview(request):
+    object = MemoModel.objects.all()
+    return render(request, 'memoapp/edit.html', {})
+
+
+@login_required
+def editview(request):
+    object = MemoModel.objects.all()
+    return render(request, 'memoapp/edit.html', {'object_list':object})
+
