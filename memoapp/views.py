@@ -1,22 +1,22 @@
-from memoapp.models import MemoModel
+from memoapp.models import MemoModel, MyUser
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 
+from memoapp.forms import LoginForm
 
 # Create your views here.
 
 def signupview(request):
+    form = LoginForm(request.POST or None)
     if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        try:
-            user = User.objects.create_user(username, '', password)
-            return render(request, 'memoapp/signup.html')
-        except IntegrityError:
-            return render(request, 'memoapp/signup.html', {'error':'このユーザーはすでに登録されています。'})
-    return render(request, 'memoapp/signup.html')
+        if form.is_valid():
+            username = request.POST['username']
+            password = request.POST['password']
+            MyUser.objects.create_user(username, password)
+            return redirect('signin')
+    return render(request, 'memoapp/signup.html', {'form': form})
 
 
 def signinview(request):
