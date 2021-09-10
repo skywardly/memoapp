@@ -29,6 +29,7 @@ class MemoForm(forms.Form):
         widget=forms.Textarea(attrs={'class': 'form-control'}),
     )
 
+'''
     a = None
 
     def __init__(self, *args, **kwargs):
@@ -50,3 +51,4 @@ class MemoForm(forms.Form):
             self.add_error('memo', '２で終わってはだめです')
             #raise ValidationError('２で終わってはだめです')
         return data
+'''

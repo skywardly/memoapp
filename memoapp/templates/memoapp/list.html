@@ -11,6 +11,11 @@
 <h1>メモ一覧ページ</h1>
 
 <p>検索</p>
+
+{% for object in object_list %}
+    <p>{{ object.memo|linebreaksbr }}</p>
+{% endfor %}
+
 <p>３つ目のメモ</p>
 <p>２つ目のメモ</p>
 <p>１つ目のメモ</p>
