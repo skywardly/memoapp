@@ -8,18 +8,14 @@
 </div>
 {% endif %}
 
-<h1>メモ一覧ページ</h1>
+<h1>メモ詳細ページ</h1>
 
-<form method="get">
-    <input name="query" value="{{ request.GET.query }}" type="text">
-    <button type="submit">検索する</button>
-</form>
+<p><a href="{% url 'list' %}">＜メモ一覧に戻る</a></p>
 
-{% for object in object_list %}
-    <p><a href="{% url 'detail' object.pk %}">{{ object.memo|linebreaksbr }}</a></p>
-{% endfor %}
+    <p>{{ object.memo|linebreaksbr }}</p>
 
 <p><a href="{% url 'create' %}">新規</a></p>
+<p><a href="{% url 'edit' pk=object.pk %}">編集</a></p>
 <p>削除</p>
 <p><a href="{% url 'signout' %}">ログアウト</a></p>
 <p>メモの中身</p>

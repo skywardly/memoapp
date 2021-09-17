@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from memoapp.forms import LoginForm, MemoForm
+from django.utils import timezone
 
 # Create your views here.
 
@@ -42,8 +43,14 @@ def signoutview(request):
 
 @login_required
 def listview(request):
-    object_list = MemoModel.objects.all()
+    object_list = MemoModel.objects.filter(user=request.user.id)
     return render(request, 'memoapp/list.html', {'object_list':object_list})
+
+
+@login_required
+def detailview(request, pk):
+    object = MemoModel.objects.filter(user=request.user.id).get(pk=pk)
+    return render(request, 'memoapp/detail.html', {'object':object})
 
 
 @login_required
@@ -73,7 +80,21 @@ def createview(request):
 
 
 @login_required
-def editview(request):
-    object = MemoModel.objects.all()
-    return render(request, 'memoapp/edit.html', {'object_list':object})
+def editview(request, pk):
+    object = MemoModel.objects.get(pk=pk)
+    if request.method == "POST":
+        form = MemoForm(request.POST, instance=object)
+        if form.is_valid():
+            object = form.save(commit=False)
+            object.save()
+            return redirect('detail', pk=object.pk)
+    else:
+        form = MemoForm(instance=object)
+    return render(request, 'memoapp/edit.html', {'form': form})
 
+'''
+    a = MemoModel.objects.get(pk=pk)
+    f = MemoForm(request.POST, instance=a)
+    f.save()
+
+'''
