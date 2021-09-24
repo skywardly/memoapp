@@ -1,3 +1,9 @@
+{% extends 'memoapp/base.html' %}
+
+{% block content %}
+
+<body>
+
 {% if messages %}
 <div class="alert alert-success" role="alert">
     <ul class="messages">
@@ -23,3 +29,6 @@
 <p>削除</p>
 <p><a href="{% url 'signout' %}">ログアウト</a></p>
 <p>メモの中身</p>
+
+</body>
+{% endblock content %}
