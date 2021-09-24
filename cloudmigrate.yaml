@@ -1,0 +1,56 @@
+# [START cloudrun_django_cloudmigrate]
+steps:
+  - id: "build image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}", "-f", "./docker/prod/Dockerfile", "."]
+
+  - id: "push image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"]
+
+  - id: "apply migrations"
+    name: "gcr.io/google-appengine/exec-wrapper"
+    args:
+      [
+        "-i",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}",
+        "-s",
+        "${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME}",
+        "-e",
+        "SETTINGS_NAME=${_SECRET_SETTINGS_NAME}",
+        "--",
+        "python",
+        "manage.py",
+        "migrate",
+        "--settings=memoappproject.settings.prod",
+      ]
+
+  - id: "collect static"
+    name: "gcr.io/google-appengine/exec-wrapper"
+    args:
+      [
+        "-i",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}",
+        "-s",
+        "${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME}",
+        "-e",
+        "SETTINGS_NAME=${_SECRET_SETTINGS_NAME}",
+        "--",
+        "python",
+        "manage.py",
+        "collectstatic",
+        "--verbosity",
+        "2",
+        "--no-input",
+        "--settings=memoappproject.settings.prod",
+      ]
+
+substitutions:
+  _INSTANCE_NAME: memoapp-db
+  _REGION: asia-northeast1
+  _SERVICE_NAME: memoapp
+  _SECRET_SETTINGS_NAME: django_settings
+
+images:
+  - "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"
+# [END cloudrun_django_cloudmigrate]
