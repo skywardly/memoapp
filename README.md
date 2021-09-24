@@ -5,10 +5,10 @@ https://cloud.google.com/python/django/run
 
 ### 環境変数
 ```
-PROJECT_ID=cloud-run-django-tutorial
-PROJECTNUM=200524719768
-REGION=asia-northeast1
-INSTANCE_NAME=memoapp-db
+export PROJECT_ID=cloud-run-django-tutorial
+export PROJECTNUM=200524719768
+export REGION=asia-northeast1
+export INSTANCE_NAME=memoapp-db
 ```
 
 ### Cloud SQL for MySQL インスタンスを設定する
@@ -58,31 +58,12 @@ gcloud secrets create django_settings --replication-policy automatic
 gcloud secrets versions add django_settings --data-file .env
 ```
 
-#### プロジェクト番号の確認
-```
-gcloud secrets describe django_settings
-```
-
 #### サービス アカウント
 ```
 gcloud secrets add-iam-policy-binding django_settings \
     --member serviceAccount:$PROJECTNUM-compute@developer.gserviceaccount.com \
     --role roles/secretmanager.secretAccessor
 gcloud secrets add-iam-policy-binding django_settings \
-    --member serviceAccount:$PROJECTNUM@cloudbuild.gserviceaccount.com \
-    --role roles/secretmanager.secretAccessor
-```
-
-#### Django の管理者パスワード用のシークレットを作成する
-superuser_password
-```
-gcloud secrets create superuser_password --replication-policy automatic
-cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c30 > superuser_password
-gcloud secrets versions add superuser_password --data-file superuser_password
-```
-
-```
-gcloud secrets add-iam-policy-binding superuser_password \
     --member serviceAccount:$PROJECTNUM@cloudbuild.gserviceaccount.com \
     --role roles/secretmanager.secretAccessor
 ```
@@ -94,7 +75,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
     --role roles/cloudsql.client
 ```
 
-### ローカル コンピュータでアプリを実行する
+### データベースマイグレーション
 #### Cloud SQL Auth プロキシを起動
 ```
 ./cloud_sql_proxy -instances="$PROJECT_ID:$REGION:$INSTANCE_NAME"=tcp:3306
@@ -102,10 +83,41 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 #### 別ターミナルでDjangoを実行
 ```
-GOOGLE_CLOUD_PROJECT=$PROJECT_ID
-USE_CLOUD_SQL_AUTH_PROXY=true
+export GOOGLE_CLOUD_PROJECT=$PROJECT_ID
+export USE_CLOUD_SQL_AUTH_PROXY=true
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
+python manage.py migrate --settings=memoappproject.settings.prod 
+```
+
+### デプロイ
+#### Docker イメージビルド
+```
+gcloud builds submit --config cloudmigrate.yaml
+```
+
+#### デプロイ
+```
+gcloud run deploy memoapp \
+    --platform managed \
+    --region $REGION \
+    --image gcr.io/$PROJECT_ID/memoapp \
+    --add-cloudsql-instances $PROJECT_ID:$REGION:$INSTANCE_NAME \
+    --allow-unauthenticated
+```
+
+### 更新
+#### Docker イメージビルド
+```
+gcloud builds submit --config cloudmigrate.yaml
+```
+
+#### デプロイ
+```
+gcloud run deploy memoapp \
+    --platform managed \
+    --region $REGION \
+    --image gcr.io/$PROJECT_ID/memoapp
 ```

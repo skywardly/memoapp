@@ -1,10 +1,10 @@
 *.log
 *.pyc
 __pycache__/
-docker/*
 db-volumes/
 db.sqlite3
 .DS_store
 db/
-.vscode/
 venv/
+.vscode/
+.env
