@@ -32,7 +32,7 @@ gcloud sql users set-password root \
 
 #### データベースの作成
 ```
-gcloud sql databases create memoapp \
+gcloud sql databases create django-db \
     --instance $INSTANCE_NAME
 ```
 
