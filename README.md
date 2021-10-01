@@ -33,7 +33,7 @@ gcloud sql users set-password root \
 #### データベースの作成
 ```
 gcloud sql databases create django-db \
-    --instance $INSTANCE_NAME
+    --instance $INSTANCE_NAME --charset=utf8mb4 --collation=utf8mb4_general_ci
 ```
 
 #### ユーザーを作成する
