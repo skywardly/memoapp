@@ -16,9 +16,13 @@
 
 <h1>メモ一覧ページ</h1>
 
-<form method="get">
-    <input name="query" value="{{ request.GET.query }}" type="text">
+<form method="GET" action="{% url 'list' %}">
+    <input type="text" name="keyword">
     <button type="submit">検索する</button>
+</form>
+
+<form method="GET" action="{% url 'list' %}">
+    <button type="submit">検索を解除</button>
 </form>
 
 {% for object in object_list %}

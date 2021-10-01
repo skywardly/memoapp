@@ -16,6 +16,8 @@
 
 <p><a href="{% url 'create' %}">新規</a></p>
 <p><a href="{% url 'edit' pk=object.pk %}">編集</a></p>
-<p>削除</p>
+<form method="post" action="{% url 'delete' pk=object.pk %}">{% csrf_token %}
+    <button class="btn" type="submit" onclick='return confirm("本当に削除しますか？");'>削除</button>
+</form>
 <p><a href="{% url 'signout' %}">ログアウト</a></p>
 <p>メモの中身</p>

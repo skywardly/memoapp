@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from .models import MemoModel
 
 class LoginForm(forms.Form):
     username = forms.EmailField(
@@ -23,11 +24,20 @@ class LoginForm(forms.Form):
         return 
 
 
+class MemoForm(forms.ModelForm): # ModelFormを継承
+    class Meta():
+        model = MemoModel # どのmodelを利用するかmodel = モデル名で定義
+        fields = ('memo',) # 表示するフィールド、'__all__'とすると全て
+
+
+'''
 class MemoForm(forms.Form):
     memo = forms.CharField(
         required=True,
         widget=forms.Textarea(attrs={'class': 'form-control'}),
     )
+'''
+
 
 '''
     a = None

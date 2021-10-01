@@ -4,9 +4,9 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.db import IntegrityError
+from django.views.decorators.http import require_POST
+from django.db.models import Q
 from memoapp.forms import LoginForm, MemoForm
-from django.utils import timezone
 
 # Create your views here.
 
@@ -18,6 +18,8 @@ def signupview(request):
             password = request.POST['password']
             MyUser.objects.create_user(username, password)
             return redirect('signin')
+        else:
+            return redirect('signup')
     return render(request, 'memoapp/signup.html', {'form': form})
 
 
@@ -44,6 +46,15 @@ def signoutview(request):
 @login_required
 def listview(request):
     object_list = MemoModel.objects.filter(user=request.user.id)
+
+    """ 検索機能の処理 """
+    keyword = request.GET.get('keyword')
+    if keyword:
+        object_list = object_list.filter(
+            Q(memo__icontains=keyword)
+        )
+        messages.success(request, '「{}」の検索結果'.format(keyword))
+
     return render(request, 'memoapp/list.html', {'object_list':object_list})
 
 
@@ -92,9 +103,9 @@ def editview(request, pk):
         form = MemoForm(instance=object)
     return render(request, 'memoapp/edit.html', {'form': form})
 
-'''
-    a = MemoModel.objects.get(pk=pk)
-    f = MemoForm(request.POST, instance=a)
-    f.save()
 
-'''
+@require_POST
+def deleteview(request, pk):
+    memo = MemoModel.objects.get(pk=pk)
+    memo.delete()
+    return redirect('list')
