@@ -18,8 +18,6 @@ def signupview(request):
             password = request.POST['password']
             MyUser.objects.create_user(username, password)
             return redirect('signin')
-        else:
-            return redirect('signup')
     return render(request, 'memoapp/signup.html', {'form': form})
 
 

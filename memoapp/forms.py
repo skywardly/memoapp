@@ -1,6 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.forms.widgets import PasswordInput
 from .models import MemoModel
+import re
 
 class LoginForm(forms.Form):
     username = forms.EmailField(
@@ -10,7 +12,18 @@ class LoginForm(forms.Form):
     )
     password = forms.CharField(required=True)
 
+    def clean(self):
+        password = self.cleaned_data['password']
+        if len(password) >= 8 \
+            and re.search('[a-zA-Z]', password) \
+            and re.search('[0-9]', password):
+            pass
+        else:
+            raise ValidationError('パスワードは8文字以上かつ英文字と数字をそれぞれ１文字以上含む必要があります')
+        return 
 
+
+'''
     def clean_username(self):
         username = self.cleaned_data['username']
         return username
@@ -22,6 +35,7 @@ class LoginForm(forms.Form):
         if username == 'hogehoge' and password == 'hogehoge':
             raise ValidationError('ユーザ名がhogehogeかつパスワードがhogehogeはログインできません。')
         return 
+'''
 
 
 class MemoForm(forms.ModelForm): # ModelFormを継承
