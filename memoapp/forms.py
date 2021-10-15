@@ -13,14 +13,19 @@ class LoginForm(forms.Form):
     password = forms.CharField(required=True)
 
     def clean(self):
-        password = self.cleaned_data['password']
-        if len(password) >= 8 \
-            and re.search('[a-zA-Z]', password) \
-            and re.search('[0-9]', password):
-            pass
-        else:
-            raise ValidationError('パスワードは8文字以上かつ英文字と数字をそれぞれ１文字以上含む必要があります')
-        return 
+        password = self.cleaned_data.get('password')
+        if password:
+            if len(password) >= 8 \
+                and re.search('[a-zA-Z]', password) \
+                and re.search('[0-9]', password):
+                pass
+            else:
+                #raise ValidationError('パスワードは8文字以上かつ英文字と数字をそれぞれ１文字以上含む必要があります')
+                self.add_error('password', 'パスワードは8文字以上かつ英文字と数字をそれぞれ１文字以上含む必要があります')
+                self.add_error('password', 'パスワードは8文字以上かつ英文字と数字をそれぞれ１文字以上含む必要があります')
+                self.add_error('password', 'パスワードは8文字以上かつ英文字と数字をそれぞれ１文字以上含む必要があります')
+                self.add_error('password', 'パスワードは8文字以上かつ英文字と数字をそれぞれ１文字以上含む必要があります')
+        
 
 
 '''

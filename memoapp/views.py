@@ -1,3 +1,4 @@
+import datetime
 from memoapp.models import MemoModel, MyUser
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
@@ -18,7 +19,7 @@ def signupview(request):
             password = request.POST['password']
             MyUser.objects.create_user(username, password)
             return redirect('signin')
-    return render(request, 'memoapp/signup.html', {'form': form})
+    return render(request, 'memoapp/signup.html', {'form': form, 'now': datetime.datetime.now(), 'value': 100000000000})
 
 
 def signinview(request):
